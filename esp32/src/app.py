@@ -58,8 +58,11 @@ PILL = 0x194D
 
 HEADER_Y = SCREEN_TOP_INSET
 NAV_Y = HEADER_Y + 21
-NAV_HEIGHT = 17
-HORIZON_TOP = HEADER_Y + 40
+# Height of the ATTITUDE/LEVELLING buttons and of the sub-page tabs.
+NAV_HEIGHT = 24
+NAV_BUTTON_X = (4, 124)
+NAV_BUTTON_WIDTH = 112
+HORIZON_TOP = NAV_Y + NAV_HEIGHT + 2
 HORIZON_BOTTOM = HEIGHT - 1
 HORIZON_CENTER_X = WIDTH // 2
 HORIZON_CENTER_Y = (HORIZON_TOP + HORIZON_BOTTOM) // 2
@@ -69,12 +72,12 @@ HORIZON_VIEW_CENTER_Y = HORIZON_CENTER_Y + 22
 # Fixed HORIZON elements.
 # ATTITUDE has VAN/HORIZON tabs on the top row (like LEVELLING); the
 # CALIBRATE and language buttons sit on the row below.
-CALIBRATE_RECT = (140, HORIZON_TOP + 30, 88, 18)
+CALIBRATE_RECT = (140, HORIZON_TOP + 37, 88, 18)
 # Language button on HORIZON, left of CALIBRATE on the same line. The header
 # is partly hidden by the printed case, so it is not placed there. Its touch
 # area is a little larger than the button.
-LANGUAGE_RECT = (12, HORIZON_TOP + 30, 44, 18)
-LANGUAGE_TOUCH_RECT = (4, HORIZON_TOP + 23, 60, 28)
+LANGUAGE_RECT = (12, HORIZON_TOP + 37, 44, 18)
+LANGUAGE_TOUCH_RECT = (4, HORIZON_TOP + 30, 60, 28)
 CALIBRATE_RADIUS = 5
 READOUT_WIDTH = 108
 READOUT_HEIGHT = 36
@@ -204,17 +207,35 @@ def draw_header(state):
     g.text(189, HEADER_Y + 5, status_label, status_colour)
 
 
-def draw_navigation():
-    buttons = (
-        (4, NAV_Y, 112, t("nav_attitude"), active_screen == 0),
-        (124, NAV_Y, 112, t("nav_levelling"), active_screen == 1),
-    )
-    for x, y, width, label, selected in buttons:
-        fill = PILL if selected else DARK
-        edge = CYAN if selected else GREY
+def label_scale(labels, width):
+    """Text scale for a row of buttons: 2 when every label fits, else 1."""
+    # A scale-2 label is len * 12 - 2 pixels wide; keep 2 px clear of the edges.
+    if all(len(label) * 12 - 2 <= width - 6 for label in labels):
+        return 2
+    return 1
+
+
+def draw_button_row(y, xs, width, labels, selected):
+    """Draw a row of NAV_HEIGHT buttons with the selected one highlighted."""
+    scale = label_scale(labels, width)
+    text_y = y + (NAV_HEIGHT - 7 * scale) // 2
+    for index, (x, label) in enumerate(zip(xs, labels)):
+        fill = PILL if index == selected else DARK
+        edge = CYAN if index == selected else GREY
         g.fill_rect(x, y, width, NAV_HEIGHT, fill)
         g.rect(x, y, width, NAV_HEIGHT, edge)
-        g.text(x + (width - len(label) * 6) // 2, y + 5, label, WHITE)
+        text_width = len(label) * 6 * scale - scale
+        g.text(x + (width - text_width) // 2, text_y, label, WHITE, scale=scale)
+
+
+def draw_navigation():
+    draw_button_row(
+        NAV_Y,
+        NAV_BUTTON_X,
+        NAV_BUTTON_WIDTH,
+        (t("nav_attitude"), t("nav_levelling")),
+        active_screen,
+    )
 
 
 
@@ -307,12 +328,7 @@ def draw_language_button():
 
 def draw_view_tabs(labels, selected):
     """The two sub-page tabs at the top of ATTITUDE and LEVELLING."""
-    for index, (x, label) in enumerate(zip((12, 128), labels)):
-        fill = PILL if index == selected else DARK
-        edge = CYAN if index == selected else GREY
-        g.fill_rect(x, CORNER_TABS_Y, 100, NAV_HEIGHT, fill)
-        g.rect(x, CORNER_TABS_Y, 100, NAV_HEIGHT, edge)
-        g.text(x + (100 - len(label) * 6) // 2, CORNER_TABS_Y + 5, label, WHITE)
+    draw_button_row(CORNER_TABS_Y, VIEW_TAB_X, VIEW_TAB_WIDTH, labels, selected)
 
 
 def draw_corner_view_tabs():
@@ -356,13 +372,16 @@ CORNER_TEXT_KEYS = {
 }
 # The tabs sit below the level frame's top edge (and the red frame's).
 CORNER_TABS_Y = HORIZON_TOP + 6
-CORNER_CONTENT_TOP = HORIZON_TOP + 24
+# The tabs clear the red frame's sides (6 px) as well.
+VIEW_TAB_X = (6, 122)
+VIEW_TAB_WIDTH = 112
+CORNER_CONTENT_TOP = CORNER_TABS_Y + NAV_HEIGHT + 1
 # Cell rows keep fixed bottom edges and shrink when the top inset grows.
-WEDGE_TOP = HORIZON_TOP + 32
+WEDGE_TOP = HORIZON_TOP + 39
 WEDGE_BOTTOM = 288
 WEDGE_GAP = 20
 WEDGE_HEIGHT = (WEDGE_BOTTOM - WEDGE_TOP - WEDGE_GAP) // 2
-CORNER_TOP = HORIZON_TOP + 26
+CORNER_TOP = HORIZON_TOP + 33
 CORNER_BOTTOM = 306
 CORNER_GAP = 12
 CORNER_HEIGHT = (CORNER_BOTTOM - CORNER_TOP - CORNER_GAP) // 2
@@ -1067,10 +1086,9 @@ def touch_screen_at(point):
         return None
     x, y = point
     if NAV_Y <= y < NAV_Y + NAV_HEIGHT:
-        if 4 <= x < 116:
-            return 0
-        if 124 <= x < 236:
-            return 1
+        for index, button_x in enumerate(NAV_BUTTON_X):
+            if button_x <= x < button_x + NAV_BUTTON_WIDTH:
+                return index
     return None
 
 
@@ -1114,10 +1132,9 @@ def touch_corner_view_at(point):
         return None
     x, y = point
     if CORNER_TABS_Y <= y < CORNER_TABS_Y + NAV_HEIGHT:
-        if 12 <= x < 112:
-            return 0
-        if 128 <= x < 228:
-            return 1
+        for index, tab_x in enumerate(VIEW_TAB_X):
+            if tab_x <= x < tab_x + VIEW_TAB_WIDTH:
+                return index
     return None
 
 
