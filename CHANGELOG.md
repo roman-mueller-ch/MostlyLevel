@@ -4,6 +4,7 @@ Notable project changes are recorded here. This file was introduced with the ini
 
 ## Unreleased
 
+- Documentation: the README's first row of screenshots now shows all four views (VAN, HORIZON, 2 WEDGES, 4 CORNERS); the level-frame screenshot moved to the second row.
 - ESP32 display: bigger ATTITUDE/LEVELLING buttons and sub-page tabs (VAN/HORIZON, 2 WEDGES/4 CORNERS), 24 px instead of 17 px high, with double-size text when every label of the row fits, otherwise the normal size (owner request). In the current texts, the menu row falls back in German, French, and Spanish, and the LEVELLING tabs in Spanish. The tabs are wider (112 px, clear of the red frame's sides); the pages start 7 px lower, CALIBRATE and the language button 14 px lower, and the LEVELLING cells are shorter. The Android app is unchanged. Reference and README images regenerated and reviewed; confirmed on the device by the owner on 2026-11-02.
 - Android app: Expo patch updates (expo 58.0.16, expo-font 58.0.9, expo-router 58.0.24). CI's `expo-doctor` step is now advisory: it failed when Expo published newer patches, turning CI red without a change in the repo.
 - GitHub account renamed from kwyjibo089 to roman-mueller-ch: README links updated, and the Android app ID changes to `io.github.roman_mueller_ch.mostlylevel` (before any release). Android treats it as a new app, so existing installs must be replaced and their settings entered again.

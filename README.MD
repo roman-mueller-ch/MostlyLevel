@@ -9,7 +9,7 @@
   <img src="assets/readme-van-live.png" width="200" alt="ATTITUDE page, VAN view: the van from behind and from the side, tilted like the real van">
   <img src="assets/readme-horizon-live.png" width="200" alt="ATTITUDE page, HORIZON view: aircraft-style virtual horizon">
   <img src="assets/readme-levelling-wedges.png" width="200" alt="LEVELLING page, 2 WEDGES view: the two wheels to lift and by how much">
-  <img src="assets/readme-van-level.png" width="200" alt="Level: a green frame surrounds the whole screen">
+  <img src="assets/readme-levelling-corners.png" width="200" alt="LEVELLING page, 4 CORNERS view: the lift needed at every wheel">
 </p>
 
 *Screens as drawn by the app (240 × 320 px, shown at 2×). The images are rendered from the app's own drawing code by the desktop tests; a screenshot taken on the device matched them.*
@@ -134,7 +134,7 @@ You need the display board, a WT901BLE67-style sensor, a USB-C cable, and Python
 
 <p>
   <img src="assets/readme-horizon-tilted.png" width="200" alt="HORIZON view with the van rolled and pitched">
-  <img src="assets/readme-levelling-corners.png" width="200" alt="LEVELLING page, 4 CORNERS view">
+  <img src="assets/readme-van-level.png" width="200" alt="Level: a green frame surrounds the page">
   <img src="assets/readme-de-van-live.png" width="200" alt="VAN view in German">
   <img src="assets/readme-fr-horizon-stale.png" width="200" alt="HORIZON view in French with a stale-data warning">
 </p>
